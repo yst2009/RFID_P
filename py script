@@ -1,0 +1,151 @@
+import os
+
+
+def load_ids(file_path):
+    """
+    Read all IDs from the TXT file.
+    Each line represents one UID.
+    """
+
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            ids = []
+
+            for line in file:
+                uid = line.strip()
+
+                # Ignore empty lines
+                if uid:
+                    ids.append(uid.upper())
+
+            return ids
+
+    except FileNotFoundError:
+        print("\nERROR: File not found.")
+        return []
+
+    except PermissionError:
+        print("\nERROR: Permission denied.")
+        return []
+
+    except Exception as e:
+        print(f"\nERROR: {e}")
+        return []
+
+
+def show_all_ids(ids):
+    """
+    Display all IDs stored in the file.
+    """
+
+    print("\n========== ALL IDs ==========")
+
+    if not ids:
+        print("No IDs found in the file.")
+    else:
+        for number, uid in enumerate(ids, start=1):
+            print(f"{number}. {uid}")
+
+        print(f"\nTotal IDs: {len(ids)}")
+
+    print("=============================\n")
+
+
+def search_id(ids):
+    """
+    Search for an ID in the loaded IDs.
+    """
+
+    user_id = input("\nEnter ID to search: ").strip().upper()
+
+    if not user_id:
+        print("Please enter an ID.")
+        return
+
+    if user_id in ids:
+        print("\nFOUND")
+        print(f"ID: {user_id}")
+    else:
+        print("\nNOT FOUND")
+        print(f"ID: {user_id}")
+
+
+def main():
+
+    print("================================")
+    print("       RFID ID CHECKER")
+    print("================================")
+
+    # Ask the user for the TXT file path
+    file_path = input("\nEnter TXT file path: ").strip().strip('"')
+
+    # Check if the file exists
+    if not os.path.isfile(file_path):
+        print("\nERROR: The file does not exist.")
+        return
+
+    # Load IDs
+    ids = load_ids(file_path)
+
+    if not ids:
+        print("\nThe file is empty or no valid IDs were found.")
+
+    print(f"\nFile loaded successfully:")
+    print(file_path)
+    print(f"Total IDs: {len(ids)}")
+
+    # Main menu
+    while True:
+
+        print("\n========== MENU ==========")
+        print("1. Show all IDs")
+        print("2. Search for ID")
+        print("3. Reload file")
+        print("4. Change file")
+        print("5. Exit")
+        print("==========================")
+
+        choice = input("Choose: ").strip()
+
+        # Show all IDs
+        if choice == "1":
+            show_all_ids(ids)
+
+        # Search
+        elif choice == "2":
+            search_id(ids)
+
+        # Reload the same file
+        elif choice == "3":
+            ids = load_ids(file_path)
+
+            print("\nFile reloaded successfully.")
+            print(f"Total IDs: {len(ids)}")
+
+        # Select another file
+        elif choice == "4":
+
+            new_path = input("\nEnter new TXT file path: ").strip().strip('"')
+
+            if not os.path.isfile(new_path):
+                print("\nERROR: The file does not exist.")
+                continue
+
+            file_path = new_path
+            ids = load_ids(file_path)
+
+            print("\nNew file loaded successfully.")
+            print(f"File: {file_path}")
+            print(f"Total IDs: {len(ids)}")
+
+        # Exit
+        elif choice == "5":
+            print("\nGoodbye!")
+            break
+
+        else:
+            print("\nInvalid choice. Please select 1-5.")
+
+
+if __name__ == "__main__":
+    main()
